@@ -15,8 +15,10 @@ async function getEvents(req, res) {
 async function createEvent(req, res) {
     try {
         const { title, description, date, time, location, price, capacity, creatorId } = req.body
-        if(!title || !description) {
-            res.status(400).json({ message: 'Title and description are required!' })
+
+        // VALIDATION: Check for all required fields
+        if (!title || !description || !date || !location) {
+            return res.status(400).json({ message: 'Title, description, date, and location are required fields!' }) 
         }
 
         const event = new eventsModel({
@@ -30,28 +32,63 @@ async function createEvent(req, res) {
             creatorId
         })
         const savedEvent = await event.save()
-        res.status(200).json(savedEvent)
+        res.status(201).json(savedEvent) 
+
     } catch(error) {
         res.status(500).json({ message: 'Error creating event', error })
     }
 }
 
-//PUT
+//PUT (UPDATE)
 async function updateEvent(req, res) {
     try {
+        const eventId = req.params.id;
+        const updateData = req.body;
+        
+        // 1. Validation: Check for empty body
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: 'Request body cannot be empty for an update.' });
+        }
+        
+        // 2. Find Event for Security Check (pre-update check)
+        // We use findById to easily check existence and creatorId later
+        const existingEvent = await eventsModel.findById(eventId);
+
+        if (!existingEvent) {
+            // Updated to 404 Not Found, which I think is more accurate for a missing resource
+            return res.status(404).json({ message: 'Event not found.' });
+        }
+        
+        // 💡 SECURITY CHECK PLACEHOLDER (For Week 6/7)
+        /* // Once OAuth is set up, we will secure this route by checking the user's ID:
+        if (existingEvent.creatorId.toString() !== req.user.id.toString()) {
+             return res.status(403).json({ message: 'Forbidden. You do not have permission to update this event.' });
+        }
+        */
+
+        // 3. Update the event
         const updatedEvent = await eventsModel.findOneAndUpdate(
-            { _id: req.params.id },
-            req.body,
-            { new: true }
+            { _id: eventId },
+            updateData,
+            { 
+                new: true,           // Return the document after update
+                runValidators: true, // Enforce Mongoose schema validation on the updated fields
+            }
         )
 
         if(!updatedEvent) {
-            return res.status(400).json({ message: 'Event not foound' })
+            // This is a fail-safe check in case the update somehow didn't return a document
+            return res.status(500).json({ message: 'Failed to update event in database.' })
         }
 
-        return res.json(updatedEvent)
+        return res.status(200).json(updatedEvent)
+        
     } catch(error) {
-        res.status(500).json({ message: 'Error updating event', error })
+        // Handle Mongoose validation errors (e.g., trying to set a string to a Number field)
+        res.status(500).json({ 
+            message: 'Error updating event.', 
+            error: error.message // Return the specific Mongoose error message
+        })
     }
 }
 

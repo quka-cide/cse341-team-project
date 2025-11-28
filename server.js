@@ -3,14 +3,16 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 require('dotenv').config()
 const routes = require('./routes')
-
+// Swagger setup imports
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger');
 const app = express()
 app.use(cors())
 app.use(express.json())
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('Server is running!');
+    res.send('Server is running!');
 });
 
 async function connectDB() {
@@ -26,8 +28,14 @@ async function connectDB() {
 const port = process.env.PORT || 8080
 
 connectDB().then(() => {
-    app.use('/api', routes)
+    // Swagger UI setup
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+    app.use('/api', routes) 
+    
     app.listen(port, () => {
         console.log(`Server running on ${port}`)
+        // 🚀 Add a log to remind us of the documentation URL
+        console.log(`API Documentation available at http://localhost:${port}/api-docs`)
     })
 })
