@@ -14,27 +14,26 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000/api', // Update our local server port/base route
+        url: 'http://localhost:8080/api', // Update our local server port/base route
         description: 'Local Development Server'
       },
     ],
     components: {
         securitySchemes: {
-            githubAuth: {
+            googleAuth: { // <-- RENAMED TO MATCH PROJECT
                 type: 'oauth2',
-                description: 'OAuth2 authentication flow for GitHub.',
+                description: 'Google OAuth 2.0 Authentication',
                 flows: {
-                    authorizationCode: {
-                        // The user will be redirected to this URL to authorize your app
-                        authorizationUrl: 'https://github.com/login/oauth/authorize',
-                        // Your server will exchange the code here to get an access token
-                        tokenUrl: 'https://github.com/login/oauth/access_token',
+                    implicit: { // Implicit flow is best for client-side documentation testing
+                        // Google's OAuth URL
+                        authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth', 
+                        tokenUrl: 'https://oauth2.googleapis.com/token',
                         scopes: {
-                            'user:email': 'Grants read access to a user’s primary email address.',
-                            'read:user': 'Grants access to user profile information.'
-                        }
-                    }
-                }
+                            'profile': 'Access to user profile information',
+                            'email': 'Access to user email address',
+                        },
+                    },
+                },
             },
         },
         // Define reusable schemas for clarity
@@ -66,7 +65,7 @@ const options = {
     }
   },
   // API files containing annotations/JSDoc comments
-  apis: ['./routes/*.js', './models/*.js'], 
+  apis: ['./routes/*.js', './models/*.js', './routes/swagger-paths/*.yaml' ], 
 };
 
 const specs = swaggerJsdoc(options);

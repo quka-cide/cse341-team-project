@@ -1,0 +1,69 @@
+/registrations:
+  post:
+    tags:
+      - Registrations
+    summary: Register a user for an event
+    description: Creates a new event registration. Requires user authentication.
+    security:
+      - googleAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Registration'
+    responses:
+      '201':
+        description: Registration created successfully.
+      '400':
+        description: Invalid request or validation error.
+      '401':
+        description: Unauthorized.
+
+/registrations/{eventId}:
+  get:
+    tags:
+      - Registrations
+    summary: Get all registrations for a specific event
+    description: Retrieves all registrations associated with a single event ID.
+    parameters:
+      - in: path
+        name: eventId
+        schema:
+          type: string
+        required: true
+        description: The ID of the event to retrieve registrations for.
+    responses:
+      '200':
+        description: An array of registration objects.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Registration'
+      '404':
+        description: Event not found.
+
+/registrations/{id}:
+  delete:
+    tags:
+      - Registrations
+    summary: Cancel a registration
+    description: Deletes an event registration by its ID. Requires user authentication and user must be the registration owner.
+    security:
+      - googleAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique MongoDB ID of the registration to cancel.
+    responses:
+      '200':
+        description: Registration cancelled successfully.
+      '404':
+        description: Registration not found.
+      '403':
+        description: Forbidden (User is not the registration owner).

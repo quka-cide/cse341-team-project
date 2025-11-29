@@ -7,35 +7,40 @@ const routes = require('./routes')
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger');
 const app = express()
-app.use(cors())
+
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
 app.use(express.json())
 
 // Test route
 app.get('/', (req, res) => {
-    res.send('Server is running!');
+    res.send('Server is running!');
 });
 
 async function connectDB() {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI)
-        console.log('MongoDB connected')
-    } catch(error) {
-        console.error('MongoDB connection error', error)
-        process.exit(1)
-    }
+    try {
+        await mongoose.connect(process.env.MONGODB_URI)
+        console.log('MongoDB connected')
+    } catch(error) {
+        console.error('MongoDB connection error', error)
+        process.exit(1)
+    }
 }
 
 const port = process.env.PORT || 8080
 
 connectDB().then(() => {
-    // Swagger UI setup
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    // Swagger UI setup
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-    app.use('/api', routes) 
-    
-    app.listen(port, () => {
-        console.log(`Server running on ${port}`)
-        // 🚀 Add a log to remind us of the documentation URL
-        console.log(`API Documentation available at http://localhost:${port}/api-docs`)
-    })
+    app.use('/api', routes) 
+    
+    app.listen(port, () => {
+        console.log(`Server running on ${port}`)
+        // 🚀 Add a log to remind us of the documentation URL
+        console.log(`API Documentation available at http://localhost:${port}/api-docs`)
+    })
 })

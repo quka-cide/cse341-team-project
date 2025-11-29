@@ -1,0 +1,69 @@
+/reviews:
+  post:
+    tags:
+      - Reviews
+    summary: Submit a new review for an event
+    description: Creates a new review for a specified event. Requires user authentication.
+    security:
+      - googleAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Review'
+    responses:
+      '201':
+        description: Review created successfully.
+      '400':
+        description: Invalid request or validation error.
+      '401':
+        description: Unauthorized.
+
+/reviews/{eventId}:
+  get:
+    tags:
+      - Reviews
+    summary: Get all reviews for a specific event
+    description: Retrieves all reviews associated with a single event ID.
+    parameters:
+      - in: path
+        name: eventId
+        schema:
+          type: string
+        required: true
+        description: The ID of the event to retrieve reviews for.
+    responses:
+      '200':
+        description: An array of review objects.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Review'
+      '404':
+        description: Event not found.
+
+/reviews/{id}:
+  delete:
+    tags:
+      - Reviews
+    summary: Delete a review
+    description: Deletes a review by its ID. Requires user authentication and user must be the review creator.
+    security:
+      - googleAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique MongoDB ID of the review to delete.
+    responses:
+      '200':
+        description: Review deleted successfully.
+      '404':
+        description: Review not found.
+      '403':
+        description: Forbidden (User is not the review creator).
