@@ -34,7 +34,14 @@ const port = process.env.PORT || 8080
 
 connectDB().then(() => {
     // Swagger UI setup
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+            oauth: {
+                clientId: process.env.GOOGLE_CLIENT_ID,
+                usePkceWithAuthorizationCodeGrant: true,
+                scopes: ["profile", "email"]
+            }
+        })
+    );
 
     app.use('/api', routes) 
     

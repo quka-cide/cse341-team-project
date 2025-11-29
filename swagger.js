@@ -17,21 +17,23 @@ const options = {
         url: 'http://localhost:8080/api', // Update our local server port/base route
         description: 'Local Development Server'
       },
+      {
+        url: 'https://cse341-team-project-kx4l.onrender.com/api',
+        description: 'Production Server (Render)'
+      }
     ],
     components: {
         securitySchemes: {
-            googleAuth: { // <-- RENAMED TO MATCH PROJECT
-                type: 'oauth2',
-                description: 'Google OAuth 2.0 Authentication',
-                flows: {
-                    implicit: { // Implicit flow is best for client-side documentation testing
-                        // Google's OAuth URL
-                        authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth', 
-                        tokenUrl: 'https://oauth2.googleapis.com/token',
-                        scopes: {
-                            'profile': 'Access to user profile information',
-                            'email': 'Access to user email address',
-                        },
+        googleAuth: {
+            type: 'oauth2',
+            description: 'Google OAuth 2.0 Authentication',
+            flows: {
+                authorizationCode: {
+                    authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+                    tokenUrl: 'https://oauth2.googleapis.com/token',
+                    scopes: {
+                        profile: 'Access to user profile information',
+                        email: 'Access to user email address'
                     },
                 },
             },
@@ -65,8 +67,9 @@ const options = {
     }
   },
   // API files containing annotations/JSDoc comments
-  apis: ['./routes/*.js', './models/*.js', './routes/swagger-paths/*.yaml' ], 
-};
+    apis: ['./routes/*.js', './models/*.js', './routes/swagger-paths/*.yaml' ], 
+  }
+}
 
 const specs = swaggerJsdoc(options);
 
