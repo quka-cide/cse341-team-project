@@ -1,6 +1,26 @@
 const registrationModel = require('../models/registeration'); 
 // Removed 'mongodb' and 'ObjectId' imports
 
+//GET
+async function getRegistrations(req, res) {
+    try {
+        const { eventId } = req.params;
+        if(!eventId) {
+            return res.status(400).json({ message: 'Event ID is required' });
+        }
+        const registrations = await registrationModel.find({ eventId: eventId});
+
+        if(registrations.length === 0) {
+            return res.status(404).json({ message: 'No registrations found for this event' });
+        }
+
+        return res.json(registrations);
+    } catch(error) {
+        return res.status(500).json({ message: 'Error fetching registrations', error });
+    }
+}
+
+//POST
 const createRegistration = async (req, res) => {
     try {
         const { eventId, userId } = req.body;
@@ -58,6 +78,7 @@ const deleteRegistration = async (req, res) => {
 };
 
 module.exports = {
+    getRegistrations,
     createRegistration,
-    deleteRegistration
+    deleteRegistration,
 };
