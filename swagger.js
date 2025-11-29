@@ -2,7 +2,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
   definition: {
-    openapi: '3.0.0', 
+    openapi: '3.0.0',
     info: {
       title: 'Event Management Platform API',
       version: '1.0.0',
@@ -14,7 +14,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:8080/api', // Update our local server port/base route
+        url: 'http://localhost:8080/api',
         description: 'Local Development Server'
       },
       {
@@ -23,53 +23,52 @@ const options = {
       }
     ],
     components: {
-        securitySchemes: {
+      securitySchemes: {
         googleAuth: {
-            type: 'oauth2',
-            description: 'Google OAuth 2.0 Authentication',
-            flows: {
-                authorizationCode: {
-                    authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-                    tokenUrl: 'https://oauth2.googleapis.com/token',
-                    scopes: {
-                        profile: 'Access to user profile information',
-                        email: 'Access to user email address'
-                    },
-                },
-            },
-        },
-        // Define reusable schemas for clarity
-        schemas: {
-            Event: {
-                type: 'object',
-                properties: {
-                    _id: { type: 'string', description: 'MongoDB document ID' },
-                    title: { type: 'string' },
-                    description: { type: 'string' },
-                    date: { type: 'string', format: 'date' },
-                    location: { type: 'string' },
-                    creatorId: { type: 'string', description: 'ID of the user who created the event' },
-                },
-            },
-            Review: {
-                type: 'object',
-                properties: {
-                    // ... define review fields
-                },
-            },
-            Registration: {
-                type: 'object',
-                properties: {
-                    // ... define registration fields
-                },
-            },
+          type: 'oauth2',
+          description: 'Google OAuth 2.0 Authentication',
+          flows: {
+            authorizationCode: {
+              authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+              tokenUrl: 'https://oauth2.googleapis.com/token',
+              scopes: {
+                profile: 'Access to user profile information',
+                email: 'Access to user email address'
+              }
+            }
+          }
         }
+      },
+      schemas: {
+        Event: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', description: 'MongoDB document ID' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            date: { type: 'string', format: 'date' },
+            location: { type: 'string' },
+            creatorId: { type: 'string', description: 'ID of the user who created the event' }
+          }
+        },
+        Review: {
+          type: 'object',
+          properties: {}
+        },
+        Registration: {
+          type: 'object',
+          properties: {}
+        }
+      }
     }
   },
-  // API files containing annotations/JSDoc comments
-    apis: ['./routes/*.js', './models/*.js', './routes/swagger-paths/*.yaml' ], 
-  }
-}
+
+  apis: [
+    './routes/*.js',
+    './models/*.js',
+    './routes/swagger-paths/*.yaml'
+  ]
+};
 
 const specs = swaggerJsdoc(options);
 
