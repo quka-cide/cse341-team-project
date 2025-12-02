@@ -1,6 +1,32 @@
 const mongoose = require('mongoose')
 const eventsModel = require('../models/events')
 
+//GET single event by ID
+async function getEventById(req, res) {
+    try {
+        const eventId = req.params.id; // Extract the ID from the route parameter
+        
+        // Find the event by its ID
+        const event = await eventsModel.findById(eventId);
+
+        if (!event) {
+            // If Mongoose finds no document, return 404
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Return the found event
+        res.status(200).json(event);
+
+    } catch(error) {
+        // Handle potential errors, such as an invalid ObjectId format
+        // Mongoose will throw a CastError if the ID is malformed
+        if (error.kind === 'ObjectId') {
+             return res.status(400).json({ message: 'Invalid Event ID format' });
+        }
+        res.status(500).json({ message: 'Error fetching event by ID', error: error.message })
+    }
+}
+
 //GET all events
 async function getEvents(req, res) {
     try {
@@ -51,11 +77,9 @@ async function updateEvent(req, res) {
         }
         
         // 2. Find Event for Security Check (pre-update check)
-        // We use findById to easily check existence and creatorId later
         const existingEvent = await eventsModel.findById(eventId);
 
         if (!existingEvent) {
-            // Updated to 404 Not Found, which I think is more accurate for a missing resource
             return res.status(404).json({ message: 'Event not found.' });
         }
         
@@ -71,23 +95,22 @@ async function updateEvent(req, res) {
             { _id: eventId },
             updateData,
             { 
-                new: true,           // Return the document after update
+                new: true,      // Return the document after update
                 runValidators: true, // Enforce Mongoose schema validation on the updated fields
             }
         )
 
         if(!updatedEvent) {
-            // This is a fail-safe check in case the update somehow didn't return a document
             return res.status(500).json({ message: 'Failed to update event in database.' })
         }
 
         return res.status(200).json(updatedEvent)
         
     } catch(error) {
-        // Handle Mongoose validation errors (e.g., trying to set a string to a Number field)
+        // Handle Mongoose validation errors
         res.status(500).json({ 
             message: 'Error updating event.', 
-            error: error.message // Return the specific Mongoose error message
+            error: error.message 
         })
     }
 }
@@ -109,6 +132,7 @@ async function deleteEvent(req, res) {
 
 module.exports = {
     getEvents,
+    getEventById, // <-- New function exported
     createEvent,
     updateEvent,
     deleteEvent
