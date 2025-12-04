@@ -37,6 +37,11 @@ const options = {
               }
             }
           }
+        },
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
         }
       },
       schemas: {
@@ -58,11 +63,43 @@ const options = {
         Registration: {
           type: 'object',
           properties: {}
+        },
+        User: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+            fullName: { type: 'string', example: 'John Doe' },
+            email: { type: 'string', example: 'john@gmail.com' }
+          }
+        },
+        UserCreateRequest: {
+          type: 'object',
+          required: ['fullName', 'email', 'password'],
+          properties: {
+            fullName: { type: 'string', example: 'John Doe' },
+            email: { type: 'string', example: 'john@gmail.com' },
+            password: { type: 'string', example: 'strongPassword123!' }
+          }
+        },
+        UserUpdateRequest: {
+          type: 'object',
+          properties: {
+            fullName: { type: 'string', example: 'Jane Doe' },
+            email: { type: 'string', example: 'jane@gmail.com' },
+            password: { type: 'string', example: 'newPassword123!' }
+          }
+        },
+        UserLoginRequest: {
+          type: 'object',
+          required: ['email', 'password'],
+          properties: {
+            email: { type: 'string', example: 'john@gmail.com' },
+            password: { type: 'string', example: 'strongPassword123!' }
+          }
         }
       }
     }
   },
-
   apis: [
     './routes/*.js',
     './models/*.js',
@@ -71,5 +108,4 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
-
 module.exports = specs;

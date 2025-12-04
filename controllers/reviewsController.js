@@ -1,4 +1,23 @@
-const reviewsModel = require('../models/reviews'); // Assuming you have created this model
+const reviewsModel = require('../models/reviews');
+
+//GET
+async function getReviewsByEvent(req, res) {
+    try {
+        const { eventId } = req.params;
+        if(!eventId) {
+            return res.status(400).json({ message: 'Event ID is required' });
+        }
+        const reviews = await reviewsModel.find({ eventId: eventId});
+
+        if(reviews.length === 0) {
+            return res.status(404).json({ message: 'No reviews found for this event' });
+        }
+
+        return res.json(reviews);
+    } catch(error) {
+        return res.status(500).json({ message: 'Error fetching reviews', error });
+    }
+}
 
 const createReview = async (req, res) => {
     try {
@@ -72,6 +91,7 @@ const deleteReview = async (req, res) => {
 };
 
 module.exports = {
+    getReviewsByEvent,
     createReview,
     deleteReview 
 };
