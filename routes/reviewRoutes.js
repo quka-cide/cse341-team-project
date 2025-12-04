@@ -4,6 +4,6 @@ const reviewsController = require('../controllers/reviewsController');
 
 router.post('/', reviewsController.createReview);
 router.delete('/:id', reviewsController.deleteReview);
-router.get('/event/:eventId', reviewsController.getReviewsByEvent); 
+router.get('/:eventId', reviewsController.getReviewsByEvent); 
 
 module.exports = router;
