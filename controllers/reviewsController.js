@@ -23,20 +23,7 @@ const createReview = async (req, res) => {
     try {
         const { eventId, userId, rating, comment } = req.body;
 
-        // 1. Validation: Mongoose will handle some validation, but we keep the custom checks.
-        if (!eventId || !userId || !rating) {
-            return res.status(400).json({ 
-                message: 'Event ID, User ID (creator), and Rating are required to post a review.' 
-            });
-        }
-        
-        if (typeof rating !== 'number' || rating < 1 || rating > 5) {
-            return res.status(400).json({ 
-                message: 'Rating must be a number between 1 and 5.' 
-            });
-        }
-
-        // 2. Business Logic: Prevent duplicate reviews (Mongoose findOne)
+        // 1. Business Logic: Prevent duplicate reviews (Mongoose findOne)
         const existingReview = await reviewsModel.findOne({
             eventId: eventId,
             userId: userId
@@ -47,7 +34,7 @@ const createReview = async (req, res) => {
         }
 
 
-        // 3. Create and save the review using the Mongoose Model
+        // 2. Create and save the review using the Mongoose Model
         const review = new reviewsModel({
             eventId,
             userId, 
@@ -90,8 +77,60 @@ const deleteReview = async (req, res) => {
     }
 };
 
+const updateReview = async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+        const { rating, comment } = req.body;
+        const updateData = {};
+
+        // 1. Validation: Ensure at least one field is provided for update
+        if (!rating && !comment) {
+            return res.status(400).json({ message: 'At least rating or comment must be provided for update.' });
+        }
+
+        // 2. Rating Validation (if rating is present)
+        if (rating !== undefined) {
+             if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+                return res.status(400).json({ 
+                    message: 'Rating must be a number between 1 and 5.' 
+                });
+            }
+            updateData.rating = rating;
+        }
+
+        if (comment !== undefined) {
+            updateData.comment = comment;
+        }
+        
+        // Find and update the review
+        const updatedReview = await reviewsModel.findByIdAndUpdate(
+            reviewId,
+            updateData,
+            { 
+                new: true, 
+                runValidators: true, // Enforce Mongoose schema validation
+            }
+        );
+
+        if (!updatedReview) {
+            return res.status(404).json({ message: 'Review not found.' });
+        }
+        
+        // 💡 FUTURE SECURITY CHECK: Ensure req.user.id matches updatedReview.userId before returning
+        
+        return res.status(200).json(updatedReview);
+
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Error updating review.',
+            error: error.message 
+        });
+    }
+};
+
 module.exports = {
     getReviewsByEvent,
     createReview,
-    deleteReview 
+    deleteReview,
+    updateReview 
 };

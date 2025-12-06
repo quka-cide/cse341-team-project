@@ -42,11 +42,6 @@ async function createEvent(req, res) {
     try {
         const { title, description, date, time, location, price, capacity, creatorId } = req.body
 
-        // VALIDATION: Check for all required fields
-        if (!title || !description || !date || !location) {
-            return res.status(400).json({ message: 'Title, description, date, and location are required fields!' }) 
-        }
-
         const event = new eventsModel({
             title,
             description,
@@ -70,11 +65,6 @@ async function updateEvent(req, res) {
     try {
         const eventId = req.params.id;
         const updateData = req.body;
-        
-        // 1. Validation: Check for empty body
-        if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: 'Request body cannot be empty for an update.' });
-        }
         
         // 2. Find Event for Security Check (pre-update check)
         const existingEvent = await eventsModel.findById(eventId);
