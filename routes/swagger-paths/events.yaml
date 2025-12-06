@@ -30,6 +30,31 @@
         description: Event created successfully.
 
 /events/{id}:
+  get:
+    tags:
+      - Events
+    summary: Retrieve a single event by ID
+    description: Returns a single event object based on the provided MongoDB ID.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique MongoDB ID of the event to retrieve.
+    responses:
+      '200':
+        description: A successful response returning the event object.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      '400':
+        description: Invalid Event ID format.
+      '404':
+        description: Event not found.
+      '500':
+        description: Server error while fetching event.
   put:
     tags:
       - Events
