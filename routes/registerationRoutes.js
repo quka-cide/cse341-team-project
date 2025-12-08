@@ -1,9 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const registrationsController = require('../controllers/registerationController');
+const registrationsController = require("../controllers/registerationController");
 
-router.get('/:eventId', registrationsController.getRegistrations)
-router.post('/', registrationsController.createRegistration)
-router.delete('/:id', registrationsController.deleteRegistration)
+router.get("/:eventId", registrationsController.getRegistrations);
+router.post("/", registrationsController.createRegistration);
+router.put("/:id", registrationsController.updateRegistration);
+router.delete("/:id", registrationsController.deleteRegistration);
 
-module.exports = router
+module.exports = router;

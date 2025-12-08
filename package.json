@@ -1,4 +1,10 @@
 {
+  "name": "cse341-team-project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --coverage --detectOpenHandles --forceExit"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -9,5 +15,9 @@
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
   }
 }
