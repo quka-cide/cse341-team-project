@@ -46,13 +46,57 @@
         description: Event not found.
 
 /reviews/{id}:
+  put:
+    tags:
+      - Reviews
+    summary: Update an existing review
+    description: Updates a review by its ID. Requires user authentication.
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique MongoDB ID of the review to update.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rating:
+                type: number
+                minimum: 1
+                maximum: 5
+                description: Rating from 1 to 5
+              comment:
+                type: string
+                description: Updated review comment
+    responses:
+      '200':
+        description: Review updated successfully.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      '400':
+        description: Invalid request or validation error (e.g., rating not between 1-5).
+      '404':
+        description: Review not found.
+      '409':
+        description: User has already submitted a review for this event.
+      '500':
+        description: Server error.
   delete:
     tags:
       - Reviews
     summary: Delete a review
     description: Deletes a review by its ID. Requires user authentication and user must be the review creator.
     security:
-      - googleAuth: []
+      - bearerAuth: []
     parameters:
       - in: path
         name: id

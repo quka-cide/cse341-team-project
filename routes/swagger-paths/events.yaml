@@ -60,7 +60,7 @@
       - Events
     summary: Update an existing event
     security:
-      - googleAuth: []
+      - bearerAuth: []
     parameters:
       - in: path
         name: id

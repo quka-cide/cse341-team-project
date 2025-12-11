@@ -46,13 +46,48 @@
         description: Event not found.
 
 /registrations/{id}:
+  put:
+    tags:
+      - Registrations
+    summary: Update an existing registration
+    description: Updates a registration by its ID. Requires user authentication.
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique MongoDB ID of the registration to update.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Registration'
+    responses:
+      '200':
+        description: Registration updated successfully.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      '400':
+        description: Invalid request or validation error.
+      '404':
+        description: Registration not found.
+      '409':
+        description: User is already registered for this event.
+      '500':
+        description: Server error.
   delete:
     tags:
       - Registrations
     summary: Cancel a registration
     description: Deletes an event registration by its ID. Requires user authentication and user must be the registration owner.
     security:
-      - googleAuth: []
+      - bearerAuth: []
     parameters:
       - in: path
         name: id
